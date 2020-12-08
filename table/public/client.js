@@ -1351,7 +1351,7 @@ function makeWebSocket() {
   var wsProto = isHttps ? "wss:" : "ws:";
   var wsUrl = wsProto + "//" + hostName + ":" + port + pathname;
   //return new WebSocket("ws://tablemain.psinha1604.repl.co");
-  return new WebSocket("ws://tablemain.psinha1604.repl.co");
+  return new WebSocket("wss://tablemain.psinha1604.repl.co");
 }
 
 var socket;
