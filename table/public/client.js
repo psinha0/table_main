@@ -72,6 +72,7 @@ var tableDiv = document.getElementById("tableDiv");
 var usersById = {};
 
 var facePathToUrlUrl = {
+  // TODO: add faces to the cards
   //"face1.png": "", // loading...
   //"face2.png": 'url("face2.png")',
   //"face3.png#0,0,32,32": 'url("data://...")',
@@ -81,8 +82,8 @@ var gameDefinition;
 var objectDefinitionsById;
 var objectIndexesById;
 var objectsById;
-var objectsWithSnapZones; // cache
-var hiderContainers; // cache
+var objectsWithSnapZones;
+var hiderContainers;
 var changeHistory;
 var futureChanges;
 function initGame(game, history) {
@@ -197,8 +198,10 @@ function preloadImagePath(path) {
   if (hashIndex !== -1) {
     var cropInfo = path.substring(hashIndex + 1).split(",");
     if (cropInfo.length !== 4) throw new Error("malformed url: " + path);
+    img.crossOrigin = "anonymous";
     img.src = path.substring(0, hashIndex);
   } else {
+    img.crossOrigin = "anonymous";
     img.src = path;
   }
   img.addEventListener("load", function() {
@@ -302,8 +305,8 @@ var hoverObject;
 var lastMouseDragX;
 var lastMouseDragY;
 
-var accordionMouseStartX = null;
-var accordionObjectStartX = null;
+var groupingMouseStartX = null;
+var groupingObjectStartX = null;
 var isGKeyDown = false;
 
 function onObjectMouseDown(event) {
@@ -311,7 +314,7 @@ function onObjectMouseDown(event) {
   if (examiningMode !== EXAMINE_NONE) return;
   var objectDiv = this;
   var object = objectsById[objectDiv.dataset.id];
-  if (object.locked) return; // click thee behind me, satan
+  if (object.locked) return; // muhahahaha click the circles (not a reference everyone will get)
   event.preventDefault();
   event.stopPropagation();
 
@@ -326,7 +329,7 @@ function onObjectMouseDown(event) {
       var stackId = getStackId(object, object);
       var stackOfObjects = getObjects().filter(function(object) { return getStackId(object, object) === stackId; });
       stackOfObjects.sort(compareZ);
-      // we can be pretty sure the object we're clicking is the top.
+      // we can be pretty sure the object we're clicking is the top (i think man idk)
       if (numberModifier < stackOfObjects.length) {
         stackOfObjects.splice(0, stackOfObjects.length - numberModifier);
       }
@@ -338,7 +341,7 @@ function onObjectMouseDown(event) {
   draggingMode = DRAG_MOVE_SELECTION;
   lastMouseDragX = eventToMouseX(event, tableDiv);
   lastMouseDragY = eventToMouseY(event, tableDiv);
-  if (isGKeyDown) startAccordion();
+  if (isGKeyDown) startGrouping();
 
   // bring selection to top
   // effectively do a stable sort.
@@ -407,9 +410,9 @@ document.addEventListener("mousemove", function(event) {
       setSelectedObjects(newSelectedObjects);
     })();
   } else if (draggingMode === DRAG_MOVE_SELECTION) {
-    if (accordionMouseStartX != null) {
-      // accordion drag
-      var dx = x - accordionMouseStartX;
+    if (groupingMouseStartX != null) {
+      // grouping drag
+      var dx = x - groupingMouseStartX;
       var objects = [];
       for (var id in selectedObjectIdToNewProps) {
         objects.push(objectsById[id]);
@@ -418,7 +421,7 @@ document.addEventListener("mousemove", function(event) {
       objects.forEach(function(object, i) {
         var newProps = selectedObjectIdToNewProps[object.id];
         var factor = i === objects.length - 1 ? 1 : i / (objects.length - 1);
-        newProps.x = Math.round(accordionObjectStartX + dx * factor);
+        newProps.x = Math.round(groupingObjectStartX + dx * factor);
         render(object);
       });
     } else {
@@ -599,7 +602,7 @@ document.addEventListener("keydown", function(event) {
       if (modifierMask === 0) { flipOverSelection(); break; }
       return;
     case "G".charCodeAt(0):
-      if (modifierMask === 0 && accordionMouseStartX == null) { groupSelection(); startAccordion(); isGKeyDown = true; break; }
+      if (modifierMask === 0 && groupingMouseStartX == null) { groupSelection(); startGrouping(); isGKeyDown = true; break; }
       return;
     case 27: // Escape
       if (modifierMask === 0 && numberTypingBuffer.length > 0) { consumeNumberModifier(); break; }
@@ -624,7 +627,6 @@ document.addEventListener("keydown", function(event) {
       var numberValue = event.keyCode < 96 ? event.keyCode - 48 : event.keyCode - 96;
       if (modifierMask === 0) { typeNumber(numberValue); break; }
       return;
-
     default: return;
   }
   event.preventDefault();
@@ -636,25 +638,25 @@ document.addEventListener("keyup", function(event) {
       unexamine();
       break;
     case "G".charCodeAt(0):
-      if (modifierMask === 0) { stopAccordion(); isGKeyDown = false; break; }
+      if (modifierMask === 0) { stopGrouping(); isGKeyDown = false; break; }
       return;
     default: return;
   }
   event.preventDefault();
 });
 
-function startAccordion() {
+function startGrouping() {
   if (draggingMode !== DRAG_MOVE_SELECTION) return;
-  accordionMouseStartX = lastMouseDragX;
+  groupingMouseStartX = lastMouseDragX;
   for (var id in selectedObjectIdToNewProps) {
     // they're all the same
-    accordionObjectStartX = selectedObjectIdToNewProps[id].x;
+    groupingObjectStartX = selectedObjectIdToNewProps[id].x;
     break;
   }
 }
-function stopAccordion() {
-  accordionMouseStartX = null;
-  accordionObjectStartX = null;
+function stopGrouping() {
+  groupingMouseStartX = null;
+  groupingObjectStartX = null;
 }
 
 function flipOverSelection() {
@@ -1348,7 +1350,8 @@ function makeWebSocket() {
   var hostName = match ? match[1] : host;
   var wsProto = isHttps ? "wss:" : "ws:";
   var wsUrl = wsProto + "//" + hostName + ":" + port + pathname;
-  return new WebSocket("ws://localhost:8008");
+  //return new WebSocket("ws://tablemain.psinha1604.repl.co");
+  return new WebSocket("ws://tablemain.psinha1604.repl.co");
 }
 
 var socket;

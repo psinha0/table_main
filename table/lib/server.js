@@ -7,7 +7,7 @@ var checkersGame = require("./checkers");
 
 function main() {
   var app = express();
-  createGzipStatic({dir:"/Users/prathmeshsinha/Downloads/table"}, function(err, middleware) {
+  createGzipStatic({dir:"/Users/prathmeshsinha/Downloads/table_main/table"}, function(err, middleware) {
     if (err) throw err;
     app.use(middleware);
     var httpServer = http.createServer(app);
