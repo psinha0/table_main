@@ -3,7 +3,7 @@ var express = require("express");
 var createGzipStatic = require("connect-static");
 var yawl = require("yawl");
 
-var checkersGame = require("./checkers");
+var tableTop = require("./assets");
 
 function main() {
   var app = express();
@@ -51,7 +51,7 @@ var roomsById = {
 function newRoom() {
   var room = {
     id: generateRoomCode(),
-    game: checkersGame,
+    game: tableTop,
     usersById: {},
     changeHistory: [],
     unusedTimeoutHandle: null,
