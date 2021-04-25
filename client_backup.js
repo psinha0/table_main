@@ -1039,41 +1039,12 @@ yourRoleDropdown.addEventListener("change", function() {
 });
 document.getElementById("closeEditUserButton").addEventListener("click", closeDialog);
 
-function convertPixelValueToView(value, dimension) { // dimension can either be "h" for height or "w" for width
-  switch (dimension) {
-    case("h"):
-      convertedValue = (value / 821); // height: 821
-      break;
-    case("w"):
-      convertedValue = (value / 1440); // width: 1440
-      break;
-    default:
-      convertedValue = value;
-  }
-  return convertedValue*100;
-}
-
-function convertViewValueToPixel(value, dimension) { // dimension can either be "h" for height or "w" for width
-  switch (dimension) {
-    case("h"):
-      convertedValue = (value * document.documentElement.clientHeight); // height: 821
-      break;
-    case("w"):
-      convertedValue = (value * document.documentElement.clientWidth); // width: 1440
-      break;
-    default:
-      convertedValue = value;
-  }
-  return convertedValue/100;
-}
-
 function render(object, isAnimated) {
   if (object.id in examiningObjectsById) return; // different handling for this
   var objectDefinition = getObjectDefinition(object.id);
   var x = object.x;
   var y = object.y;
   var z = object.z;
-  var width = object.width
   var faceIndex = object.faceIndex;
   var newProps = selectedObjectIdToNewProps[object.id];
   if (newProps != null) {
@@ -1113,10 +1084,10 @@ function render(object, isAnimated) {
   } else {
     objectDiv.classList.remove("animatedMovement");
   }
-  objectDiv.style.left = convertPixelValueToView(x, "w") + "vw";
-  objectDiv.style.top  = convertPixelValueToView(y, "h") + "vh";
-  objectDiv.style.width  = convertPixelValueToView(object.width, "w") + "vw";
-  objectDiv.style.height = convertPixelValueToView(object.height, "h") + "vh";
+  objectDiv.style.left = x + "px";
+  objectDiv.style.top  = y + "px";
+  objectDiv.style.width  = object.width;
+  objectDiv.style.height = object.height;
   objectDiv.style.zIndex = z;
   if (object.faces != null) {
     var facePath = object.faces[faceIndex];
@@ -1132,8 +1103,8 @@ function render(object, isAnimated) {
     objectDiv.style.borderStyle = "solid";
     objectDiv.style.pointerEvents = "none";
     // adjust rectangle, because the border screws up everything
-    objectDiv.style.left = convertPixelValueToView((x - 3), "w") + "vw";
-    objectDiv.style.top  = convertPixelValueToView((y - 3), "h") + "vh";
+    objectDiv.style.left = (x - 3) + "px";
+    objectDiv.style.top  = (y - 3) + "px";
   } else {
     throw new Error("don't know how to render object");
   }
@@ -1146,10 +1117,10 @@ function render(object, isAnimated) {
     } else {
       backgroundDiv.classList.remove("animatedMovement");
     }
-    backgroundDiv.style.left = convertPixelValueToView(x, "w") + "vw";
-    backgroundDiv.style.top = convertPixelValueToView(y, "h") + "vh";
-    backgroundDiv.style.width  = convertPixelValueToView(object.width, "w") + "vw";
-    backgroundDiv.style.height = convertPixelValueToView(object.height, "h") + "vh";
+    backgroundDiv.style.left = x + "px";
+    backgroundDiv.style.top = y + "px";
+    backgroundDiv.style.width  = object.width;
+    backgroundDiv.style.height = object.height;
     backgroundDiv.style.zIndex = 0;
     backgroundDiv.style.display = "block";
     backgroundDiv.style.backgroundColor = objectDefinition.backgroundColor.replace(/alpha/, "1.0");
@@ -1203,8 +1174,8 @@ function renderExaminingObjects() {
     objectDiv.classList.add("animatedMovement");
     objectDiv.style.left = renderX + window.scrollX;
     objectDiv.style.top  = renderY + window.scrollY;
-    objectDiv.style.width  = convertPixelValueToView(renderWidth, "w");
-    objectDiv.style.height = convertPixelValueToView(renderHeight, "h");
+    objectDiv.style.width  = renderWidth;
+    objectDiv.style.height = renderHeight;
     objectDiv.style.zIndex = maxZ + i + 3;
     var stackHeightDiv = getStackHeightDiv(object.id);
     stackHeightDiv.style.display = "none";
@@ -1265,11 +1236,10 @@ function renderSelectionRectangle() {
     }
     if (height <= 0) height = 1;
     if (width  <= 0) width  = 1;
-
-    selectionRectangleDiv.style.left = convertPixelValueToView((tableDiv.offsetLeft + x), "w") + "vw";
-    selectionRectangleDiv.style.top  = convertPixelValueToView((tableDiv.offsetTop  + y), "h") + "vh";
-    selectionRectangleDiv.style.width  = convertPixelValueToView(width, "w")  + "vw";
-    selectionRectangleDiv.style.height = convertPixelValueToView(height, "h") + "vh";
+    selectionRectangleDiv.style.left = (tableDiv.offsetLeft + x) + "px";
+    selectionRectangleDiv.style.top  = (tableDiv.offsetTop  + y) + "px";
+    selectionRectangleDiv.style.width  = width  + "px";
+    selectionRectangleDiv.style.height = height + "px";
     selectionRectangleDiv.style.display = "block";
   } else {
     selectionRectangleDiv.style.display = "none";
@@ -1298,8 +1268,8 @@ function resizeTableToFitEverything() {
     if (x > maxX) maxX = x;
     if (y > maxY) maxY = y;
   }
-  tableDiv.style.width  = convertPixelValueToView(maxX, "w") + "vw";
-  tableDiv.style.height = convertPixelValueToView(maxY, "h") + "vh";
+  tableDiv.style.width  = maxX + "px";
+  tableDiv.style.height = maxY + "px";
 }
 
 function snapToSnapZones(object, newProps) {
@@ -1309,33 +1279,27 @@ function snapToSnapZones(object, newProps) {
     var containerObjectDefinition = getObjectDefinition(containerObject.id);
     for (var j = 0; j < containerObjectDefinition.snapZones.length; j++) {
       var snapZoneDefinition = containerObjectDefinition.snapZones[j];
-      var snapZoneX      = snapZoneDefinition.x          != null ? convertPixelValueToView(snapZoneDefinition.x, "w")          : 0;
-      var snapZoneY      = snapZoneDefinition.y          != null ? convertPixelValueToView(snapZoneDefinition.y, "h")          : 0;
-      var snapZoneWidth  = snapZoneDefinition.width      != null ? convertPixelValueToView(snapZoneDefinition.width, "w")      : convertPixelValueToView(containerObjectDefinition.width, "w");
-      var snapZoneHeight = snapZoneDefinition.height     != null ? convertPixelValueToView(snapZoneDefinition.height, "h")     : convertPixelValueToView(containerObjectDefinition.height, "h");
-      var cellWidth      = snapZoneDefinition.cellWidth  != null ? convertPixelValueToView(snapZoneDefinition.cellWidth, "w")  : snapZoneWidth;
-      var cellHeight     = snapZoneDefinition.cellHeight != null ? convertPixelValueToView(snapZoneDefinition.cellHeight, "h") : snapZoneHeight;
-      var newPosX        = convertPixelValueToView(newProps.x, "w");
-      var newPosY        = convertPixelValueToView(newProps.y, "h");
-      var objectWidth    = convertPixelValueToView(object.width, "w");
-      var objectHeight   = convertPixelValueToView(object.height, "h");
-      var containerX     = convertPixelValueToView(containerObject.x, "w");
-      var containerY     = convertPixelValueToView(containerObject.y, "h");
-      if (cellWidth < objectWidth)  continue; // doesn't fit in the zone
-      if (cellHeight < objectHeight) continue; // doesn't fit in the zone
-      if (newPosX >= containerX + snapZoneX + snapZoneWidth) continue; // way off right
-      if (newPosY >= containerY + snapZoneY + snapZoneHeight) continue; // way off bottom
-      if (newPosX + objectWidth <= containerX + snapZoneX)  continue; // way off left
-      if (newPosY + objectHeight <= containerY + snapZoneY) continue; // way off top
+      var snapZoneX      = snapZoneDefinition.x          != null ? snapZoneDefinition.x          : 0;
+      var snapZoneY      = snapZoneDefinition.y          != null ? snapZoneDefinition.y          : 0;
+      var snapZoneWidth  = snapZoneDefinition.width      != null ? snapZoneDefinition.width      : containerObjectDefinition.width;
+      var snapZoneHeight = snapZoneDefinition.height     != null ? snapZoneDefinition.height     : containerObjectDefinition.height;
+      var cellWidth      = snapZoneDefinition.cellWidth  != null ? snapZoneDefinition.cellWidth  : snapZoneWidth;
+      var cellHeight     = snapZoneDefinition.cellHeight != null ? snapZoneDefinition.cellHeight : snapZoneHeight;
+      if (cellWidth  < object.width)  continue; // doesn't fit in the zone
+      if (cellHeight < object.height) continue; // doesn't fit in the zone
+      if (newProps.x >= containerObject.x + snapZoneX + snapZoneWidth)  continue; // way off right
+      if (newProps.y >= containerObject.y + snapZoneY + snapZoneHeight) continue; // way off bottom
+      if (newProps.x + object.width  <= containerObject.x + snapZoneX)  continue; // way off left
+      if (newProps.y + object.height <= containerObject.y + snapZoneY)  continue; // way off top
       // this is the zone for us
-      var relativeCenterX = newPosX + objectWidth /2 - (containerX + snapZoneX);
-      var relativeCenterY = newPosY + objectHeight /2 - (containerY + snapZoneY);
+      var relativeCenterX = newProps.x + object.width /2 - (containerObject.x + snapZoneX);
+      var relativeCenterY = newProps.y + object.height/2 - (containerObject.y + snapZoneY);
       var modX = euclideanMod(relativeCenterX, cellWidth);
       var modY = euclideanMod(relativeCenterY, cellHeight);
       var divX = Math.floor(relativeCenterX / cellWidth);
       var divY = Math.floor(relativeCenterY / cellHeight);
-      var newModX = clamp(modX, objectWidth /2, cellWidth  - objectWidth /2);
-      var newModY = clamp(modY, objectHeight/2, cellHeight - objectHeight/2);
+      var newModX = clamp(modX, object.width /2, cellWidth  - object.width /2);
+      var newModY = clamp(modY, object.height/2, cellHeight - object.height/2);
 
       var inBoundsX = 0 <= relativeCenterX && relativeCenterX < snapZoneWidth;
       var inBoundsY = 0 <= relativeCenterY && relativeCenterY < snapZoneHeight;
@@ -1349,8 +1313,8 @@ function snapToSnapZones(object, newProps) {
           inBoundsY = true;
         }
       }
-      if (inBoundsY) newProps.x = convertViewValueToPixel(divX * cellWidth  + newModX - objectWidth /2 + containerX + snapZoneX, "w");
-      if (inBoundsX) newProps.y = convertViewValueToPixel(divY * cellHeight + newModY - objectHeight/2 + containerY + snapZoneY, "h");
+      if (inBoundsY) newProps.x = divX * cellWidth  + newModX - object.width /2 + containerObject.x + snapZoneX;
+      if (inBoundsX) newProps.y = divY * cellHeight + newModY - object.height/2 + containerObject.y + snapZoneY;
       return true;
     }
   }
@@ -1423,7 +1387,7 @@ function connectToServer() {
   function onMessage(event) {
     var msg = event.data;
     if (msg === "keepAlive") return;
-    // console.log(msg);
+    console.log(msg);
     var message = JSON.parse(msg);
     if (screenMode === SCREEN_MODE_WAITING_FOR_ROOM_CODE_CONFIRMATION && message.cmd === "badRoomCode") {
       // nice try

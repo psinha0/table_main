@@ -41,6 +41,9 @@ module.exports = {
         "checkers/black_king.png",
       ],
     },
+    {
+      id: ""
+    },
     { prototypes: ["redPiece"],   x: 550, y: 200},
     { prototypes: ["redPiece"],   x: 650, y: 200},
     { prototypes: ["redPiece"],   x: 750, y: 200},
@@ -225,8 +228,14 @@ module.exports = {
       hideFaces: ["front"],
       snapZones: [{}],
     },
-    { prototypes: ["handScreenHorizontal"], y:   0, visionWhitelist: ["red"  ], backgroundColor: "rgba(255,0,0,alpha)", labelPlayerName: "red",   },
-    { prototypes: ["handScreenHorizontal"], y: 700, visionWhitelist: ["blue"], backgroundColor: "rgba(0,0,255,alpha)",   labelPlayerName: "blue", },
+    { prototypes: ["handScreenHorizontal"], y:   0, visionWhitelist: ["red"  ], backgroundColor: "rgba(224,136,58,alpha)", labelPlayerName: "red",   },
+    // color hexes:
+    // BOARD COLOR: #D7DEC2
+    // RED: #E088E3A
+    // PURPLE: #7541E30
+    // YELLOW: #E0D255
+    // BLUE: #79DSDE
+    { prototypes: ["handScreenHorizontal"], y: 700, visionWhitelist: ["blue"], backgroundColor: "rgba(117,65,224,alpha)",   labelPlayerName: "blue", },
 
     {
       id: "handScreenVertical",
@@ -238,7 +247,7 @@ module.exports = {
       hideFaces: ["front"],
       snapZones: [{}],
     },
-    { prototypes: ["handScreenVertical"], x: 0, visionWhitelist: ["yellow"], backgroundColor: "rgba(255,255,0,alpha)",   labelPlayerName: "yellow", },
-    { prototypes: ["handScreenVertical"], x: 1315, visionWhitelist: ["green"], backgroundColor: "rgba(0,255,0,alpha)",   labelPlayerName: "green", },
+    { prototypes: ["handScreenVertical"], x: 0, visionWhitelist: ["yellow"], backgroundColor: "rgba(224,210,85,alpha)",   labelPlayerName: "yellow", },
+    { prototypes: ["handScreenVertical"], x: 1315, visionWhitelist: ["green"], backgroundColor: "rgba(121,213,222,alpha)",   labelPlayerName: "green", },
   ],
 };

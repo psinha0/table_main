@@ -29,6 +29,12 @@ function main() {
   });
 }
 
+windows.event.onkeydown = function {
+  function work() {
+
+  }
+}
+
 var roomsById = {
   //"roomCode": {
   //  id: "roomCode",
