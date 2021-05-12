@@ -86,6 +86,7 @@ var objectsWithSnapZones;
 var hiderContainers;
 var changeHistory;
 var futureChanges;
+var messageHistory;
 function initGame(game, history) {
   gameDefinition = game;
   objectDefinitionsById = {};
@@ -95,6 +96,7 @@ function initGame(game, history) {
   hiderContainers = [];
   changeHistory = [];
   futureChanges = [];
+  messageHistory = [];
   for (var i = 0; i < gameDefinition.objects.length; i++) {
     var rawDefinition = gameDefinition.objects[i];
     var id = rawDefinition.id;
@@ -278,6 +280,7 @@ function fixFloatingThingZ() {
       objectDiv.style.zIndex = object.z;
     }
   });
+  document.getElementById("messageDiv").style.zIndex = z++;
   document.getElementById("roomInfoDiv").style.zIndex = z++;
   document.getElementById("helpDiv").style.zIndex = z++;
   modalMaskDiv.style.zIndex = z++;
@@ -922,6 +925,10 @@ function pushChangeToHistory(change) {
   futureChanges = [];
 }
 
+function pushMessageToHistory(message) {
+  messageHistory.push(message);
+}
+
 function eventToMouseX(event, div) { return event.clientX - div.getBoundingClientRect().left; }
 function eventToMouseY(event, div) { return event.clientY - div.getBoundingClientRect().top; }
 
@@ -969,6 +976,20 @@ function renderUserList() {
   });
   document.getElementById("myUserNameLi").addEventListener("click", showEditUserDialog);
 }
+
+function renderMessageHistory() {
+  console.log("ok");
+  var messageUl = document.getElementById("messageUl");
+  var textMessages = messageHistory;
+  messageUl.innerHTML = textMessages.map(function(message) {
+    return (
+      '<li'+(' id="messageUl" ')+'>' +
+        sanitizeHtml(message) + // work on this by adding the message here.
+      '</li>');
+  }).join("");
+  document.getElementById("myUserNameLi").addEventListener("click", showEditUserDialog);
+}
+
 var dialogIsOpen = false;
 var modalMaskDiv = document.getElementById("modalMaskDiv");
 modalMaskDiv.addEventListener("mousedown", closeDialog);
@@ -1021,6 +1042,29 @@ function submitYourName() {
     renderUserList();
   }
 }
+var submitYourMessageButton = document.getElementById("submitYourMessageButton");
+submitYourMessageButton.addEventListener("click", submitMessage);
+function submitMessage() {
+  var sentMessage = myUser.userName + ": " + messageBox.value;
+  sendMessage({
+    cmd: "sendTextMessage",
+    args: sentMessage,
+  });
+  // now halt
+  pushMessageToHistory(sentMessage);
+  renderMessageHistory();
+}
+var messageBox = document.getElementById("messageBox");
+messageBox.addEventListener("keydown", function(event) {
+  event.stopPropagation();
+  if (event.keyCode === 13) {
+    setTimeout(function() {
+      submitMessage();
+    }, 0);
+  } else if (event.keyCode === 27) {
+    document.getElementById('messageBox').value='';
+  }
+});
 var yourRoleDropdown = document.getElementById("yourRoleDropdown");
 yourRoleDropdown.addEventListener("change", function() {
   setTimeout(function() {
@@ -1423,7 +1467,7 @@ function connectToServer() {
   function onMessage(event) {
     var msg = event.data;
     if (msg === "keepAlive") return;
-    // console.log(msg);
+    console.log(msg);
     var message = JSON.parse(msg);
     if (screenMode === SCREEN_MODE_WAITING_FOR_ROOM_CODE_CONFIRMATION && message.cmd === "badRoomCode") {
       // nice try
@@ -1470,6 +1514,8 @@ function connectToServer() {
         } else if (message.cmd === "changeMyRole") {
           usersById[message.args.id].role = message.args.role;
           renderUserList();
+        } else if (message.cmd === "sendTextMessage") {
+          renderMessageHistory();
         }
         break;
       default: throw asdf;

@@ -7,7 +7,7 @@ var tableTop = require("./assets");
 
 function main() {
   var app = express();
-  createGzipStatic({dir:"/Users/prathmeshsinha/Downloads/table_main/table"}, function(err, middleware) {
+  createGzipStatic({dir:"/home/runner/tablemain/table/"}, function(err, middleware) {
     if (err) throw err;
     app.use(middleware);
     var httpServer = http.createServer(app);
@@ -27,12 +27,6 @@ function main() {
       console.log("serving: http://127.0.0.1:25407/");
     });
   });
-}
-
-windows.event.onkeydown = function {
-  function work() {
-
-  }
 }
 
 var roomsById = {
@@ -61,6 +55,7 @@ function newRoom() {
     usersById: {},
     changeHistory: [],
     unusedTimeoutHandle: null,
+    messageHistory: [],
   };
   roomsById[room.id] = room;
   return room;
@@ -130,7 +125,7 @@ function handleNewSocket(socket) {
         case CLIENT_STATE_WAITING_FOR_LOGIN:
           return ["joinRoom"];
         case CLIENT_STATE_PLAY:
-          return ["makeAMove", "changeMyName", "changeMyRole"];
+          return ["makeAMove", "changeMyName", "changeMyRole", "sendTextMessage"];
         default: throw asdf;
       }
     })();
@@ -178,6 +173,7 @@ function handleNewSocket(socket) {
           role:     user.role,
           game:     room.game,
           history:  room.changeHistory,
+          messages: room.messageHistory,
           users:    users,
         }});
         clientState = CLIENT_STATE_PLAY;
@@ -212,6 +208,9 @@ function handleNewSocket(socket) {
           }}));
         }
         break;
+      case "sendTextMessage":
+        var sentText = message.args;
+        room.messageHistory.push(sendText);
       default: throw new Error("TODO: handle command: " + message.cmd);
     }
   });
@@ -301,6 +300,11 @@ function handleNewSocket(socket) {
         var newRole = message.args;
         if (typeof newRole !== "string") return failValidation("expected string:", newRole);
         message.args = newRole;
+        break;
+      case "sendTextMessage":
+        var sentText = message.args;
+        if (typeof sendText !== "string") return failValidation("expected string: ", sentText);
+        message.args = sentText;
         break;
       default: throw new Error("TODO: handle command: " + message.cmd);
     }

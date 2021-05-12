@@ -63,11 +63,17 @@
       }
       #messageDiv {
         position: fixed;
-        top: 0px;
-        left: 100%;
-        transform: translateX(-100%);
+        top: 8px;
+        left: 84vw;
+        width: 15vw;
+        height: 97.6%;
         padding: 0.2em;
         white-space: nowrap;
+        background-color: #ffcccb;
+        float: left;
+      }
+      #messageHistory {
+        height: 80%;
       }
       .gameObject {
         position: absolute;
@@ -164,10 +170,15 @@
         <p><label>Role: <select id="yourRoleDropdown"></select></label></p>
         <p style="text-align: right;"><input id="closeEditUserButton" type="button" value="Close"></p>
       </div>
-    </div>
-    <div id="messageDiv">
-      <ul id="messageUl"></ul>
-      <span style="text-align: center;">Room Code:</span><br><span id="roomCodeSpan" class="roomCode">???</span>
+      <div id="messageDiv">
+        <div id="messageHistory">
+          <ul id="messageUl"></ul>
+        </div>
+        <p>
+          <span>Message: <input id="messageBox" style="width: 10vw" placeholder="ducks are cool" maxlength=20></span><br>
+          <input id="submitYourMessageButton" type="button" value="Submit">
+        </p>
+      </div>
     </div>
     <div id="loginDiv" style="display: none; text-align: center; font-size: 15pt;">
       <p><input id="createRoomButton" type="button" class="largeTextButon" value="Create a Room"></p>
