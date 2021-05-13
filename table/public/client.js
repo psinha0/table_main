@@ -1043,6 +1043,7 @@ function submitYourName() {
 var submitYourMessageButton = document.getElementById("submitYourMessageButton");
 submitYourMessageButton.addEventListener("click", submitMessage);
 function submitMessage() {
+  document.getElementById("audio").play();
   if (messageBox.value == '') return;
   var sentMessage = myUser.userName + ": " + messageBox.value;
   sendMessage({
@@ -1052,7 +1053,6 @@ function submitMessage() {
   // now halt
   pushMessageToHistory(sentMessage);
   renderMessageHistory();
-  document.getElementById("audio").play();
   messageBox.value='';
 }
 var messageBox = document.getElementById("messageBox");
