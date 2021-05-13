@@ -2,6 +2,7 @@
   <head>
     <META HTTP-EQUIV="content-type" CONTENT="text/html; charset=ISO-8859-1">
     <META NAME="viewport" CONTENT="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
     <title>hello</title>
     <style>
       body {
@@ -73,7 +74,15 @@
         float: left;
       }
       #messageHistory {
-        height: 80%;
+        height: 90%;
+      }
+      #messageUl {
+        font-family: "Raleway", sans-serif;
+        font-size: 16;
+        align-items: center;
+      }
+      #messageLi:not(:last-child) {
+        margin-bottom: 5px;
       }
       .gameObject {
         position: absolute;
@@ -175,8 +184,8 @@
           <ul id="messageUl"></ul>
         </div>
         <p>
-          <span>Message: <input id="messageBox" style="width: 10vw" placeholder="ducks are cool" maxlength=20></span><br>
-          <input id="submitYourMessageButton" type="button" value="Submit">
+          <span>Message: <input id="messageBox" autocomplete="off" style="width: 10vw;" placeholder="20 characters max" maxlength=20></span><br>
+          <input id="submitYourMessageButton" style="left: 10px;" type="button" value="Submit">
         </p>
       </div>
     </div>

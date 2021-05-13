@@ -211,6 +211,13 @@ function handleNewSocket(socket) {
       case "sendTextMessage":
         var sentText = message.args;
         room.messageHistory.push(sendText);
+        for (var id in room.usersById) {
+          if (id === user.id) continue;
+          room.usersById[id].socket.sendText(JSON.stringify({cmd:"sendTextMessage", args:{
+            sentText
+          }}));
+        }
+        break;
       default: throw new Error("TODO: handle command: " + message.cmd);
     }
   });

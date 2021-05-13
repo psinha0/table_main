@@ -978,16 +978,14 @@ function renderUserList() {
 }
 
 function renderMessageHistory() {
-  console.log("ok");
   var messageUl = document.getElementById("messageUl");
   var textMessages = messageHistory;
   messageUl.innerHTML = textMessages.map(function(message) {
     return (
-      '<li'+(' id="messageUl" ')+'>' +
+      '<li'+(' id="messageLi" ')+'>' +
         sanitizeHtml(message) + // work on this by adding the message here.
       '</li>');
   }).join("");
-  document.getElementById("myUserNameLi").addEventListener("click", showEditUserDialog);
 }
 
 var dialogIsOpen = false;
@@ -1045,6 +1043,7 @@ function submitYourName() {
 var submitYourMessageButton = document.getElementById("submitYourMessageButton");
 submitYourMessageButton.addEventListener("click", submitMessage);
 function submitMessage() {
+  if (messageBox.value == '') return;
   var sentMessage = myUser.userName + ": " + messageBox.value;
   sendMessage({
     cmd: "sendTextMessage",
@@ -1053,6 +1052,7 @@ function submitMessage() {
   // now halt
   pushMessageToHistory(sentMessage);
   renderMessageHistory();
+  messageBox.value='';
 }
 var messageBox = document.getElementById("messageBox");
 messageBox.addEventListener("keydown", function(event) {
@@ -1505,6 +1505,11 @@ function connectToServer() {
             role: message.args.role,
           };
           renderUserList();
+        } else if (message.cmd == "sendTextMessage") {
+          messageObject = message.args;
+          newMessage = messageObject[Object.keys(messageObject)[0]];
+          pushMessageToHistory(newMessage);
+          renderMessageHistory();
         } else if (message.cmd === "userLeft") {
           delete usersById[message.args.id];
           renderUserList();
@@ -1514,8 +1519,6 @@ function connectToServer() {
         } else if (message.cmd === "changeMyRole") {
           usersById[message.args.id].role = message.args.role;
           renderUserList();
-        } else if (message.cmd === "sendTextMessage") {
-          renderMessageHistory();
         }
         break;
       default: throw asdf;
