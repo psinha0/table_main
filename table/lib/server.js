@@ -210,10 +210,11 @@ function handleNewSocket(socket) {
         break;
       case "sendTextMessage":
         var sentText = message.args;
-        room.messageHistory.push(sendText);
+        room.messageHistory.push(sentText);
         for (var id in room.usersById) {
           if (id === user.id) continue;
-          room.usersById[id].socket.sendText(JSON.stringify({cmd:"sendTextMessage", args:{
+          var otherUser = room.usersById[id];
+          otherUser.socket.sendText(JSON.stringify({cmd:"sendTextMessage", args:{
             sentText
           }}));
         }
@@ -310,7 +311,6 @@ function handleNewSocket(socket) {
         break;
       case "sendTextMessage":
         var sentText = message.args;
-        if (typeof sendText !== "string") return failValidation("expected string: ", sentText);
         message.args = sentText;
         break;
       default: throw new Error("TODO: handle command: " + message.cmd);
