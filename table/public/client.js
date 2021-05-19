@@ -926,7 +926,9 @@ function pushChangeToHistory(change) {
 }
 
 function pushMessageToHistory(message) {
+  if (messageHistory.length >= 30) { messageHistory.splice(0, 1); }
   messageHistory.push(message);
+  // 30 is max messages before overflow
 }
 
 function eventToMouseX(event, div) { return event.clientX - div.getBoundingClientRect().left; }
@@ -990,8 +992,15 @@ function renderMessageHistory() {
 
 var dialogIsOpen = false;
 var modalMaskDiv = document.getElementById("modalMaskDiv");
-modalMaskDiv.addEventListener("mousedown", closeDialog);
+modalMaskDiv.addEventListener("mousedown", closeEverything);
 var editUserDiv = document.getElementById("editUserDiv");
+var mySideMenu = document.getElementById("mySideMenu");
+function openSideNav() {
+  mySideMenu.style.border = "1px dashed";
+  mySideMenu.style.borderRight = "0px";
+  modalMaskDiv.style.display = "block";
+  mySideMenu.style.width = "14vw";
+}
 function showEditUserDialog() {
   modalMaskDiv.style.display = "block";
   editUserDiv.style.display = "block";
@@ -1013,6 +1022,19 @@ function closeDialog() {
     document.activeElement.blur();
   }
   dialogIsOpen = false;
+}
+function closeSideMenu() {
+  modalMaskDiv.style.display = "none";
+  mySideMenu.style.border = "0px";
+  mySideMenu.style.width = "0vw";
+  if (document.activeElement != null) {
+    document.activeElement.blur();
+  }
+  dialogIsOpen = false;
+}
+function closeEverything() {
+  if (editUserDiv.style.display != "none") { closeDialog(); }
+  else { closeSideMenu(); }
 }
 var yourNameTextbox = document.getElementById("yourNameTextbox");
 yourNameTextbox.addEventListener("keydown", function(event) {
