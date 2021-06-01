@@ -72,8 +72,11 @@ body {
 #messageUl {
   font-family: "Raleway", sans-serif;
   src: url(https://fonts.googleapis.com/css?family=Raleway);
-  font-size: 16;
+  font-size: 18;
   align-items: center;
+}
+#messageLi {
+  margin-left: 3px;
 }
 #messageLi:not(:last-child) {
   margin-bottom: 5px;

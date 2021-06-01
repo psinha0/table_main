@@ -1,15 +1,15 @@
 module.exports = {
   roles: [
-    { id: "red",   name: "Red",   },
+    { id: "orange",   name: "Orange",   },
     { id: "yellow", name: "Yellow", },
-    { id: "green", name: "Green", },
-    { id: "blue",  name: "Blue",  },
+    { id: "teal", name: "Teal", },
+    { id: "violet",  name: "Violet",  },
   ],
   objects: [
     {
       faces: ["checkers/board.png"],
       locked: true,
-      x: 500,
+      x: 400,
       y: 200,
       width: 400,
       height: 400,
@@ -41,33 +41,30 @@ module.exports = {
         "checkers/black_king.png",
       ],
     },
-    {
-      id: ""
-    },
+    { prototypes: ["redPiece"],   x: 450, y: 200},
     { prototypes: ["redPiece"],   x: 550, y: 200},
     { prototypes: ["redPiece"],   x: 650, y: 200},
     { prototypes: ["redPiece"],   x: 750, y: 200},
-    { prototypes: ["redPiece"],   x: 850, y: 200},
+    { prototypes: ["redPiece"],   x: 400, y: 250},
     { prototypes: ["redPiece"],   x: 500, y: 250},
     { prototypes: ["redPiece"],   x: 600, y: 250},
     { prototypes: ["redPiece"],   x: 700, y: 250},
-    { prototypes: ["redPiece"],   x: 800, y: 250},
+    { prototypes: ["redPiece"],   x: 450, y: 300},
     { prototypes: ["redPiece"],   x: 550, y: 300},
     { prototypes: ["redPiece"],   x: 650, y: 300},
     { prototypes: ["redPiece"],   x: 750, y: 300},
-    { prototypes: ["redPiece"],   x: 850, y: 300},
+    { prototypes: ["blackPiece"], x: 400, y: 550},
     { prototypes: ["blackPiece"], x: 500, y: 550},
     { prototypes: ["blackPiece"], x: 600, y: 550},
     { prototypes: ["blackPiece"], x: 700, y: 550},
-    { prototypes: ["blackPiece"], x: 800, y: 550},
+    { prototypes: ["blackPiece"], x: 450, y: 500},
     { prototypes: ["blackPiece"], x: 550, y: 500},
     { prototypes: ["blackPiece"], x: 650, y: 500},
     { prototypes: ["blackPiece"], x: 750, y: 500},
-    { prototypes: ["blackPiece"], x: 850, y: 500},
+    { prototypes: ["blackPiece"], x: 400, y: 450},
     { prototypes: ["blackPiece"], x: 500, y: 450},
     { prototypes: ["blackPiece"], x: 600, y: 450},
     { prototypes: ["blackPiece"], x: 700, y: 450},
-    { prototypes: ["blackPiece"], x: 800, y: 450},
 
     {
       id: "d6",
@@ -83,13 +80,13 @@ module.exports = {
         "dice/d6_6.png",
       ],
     },
-    { prototypes: ["d6"], x: 950, y: 400},
-    { prototypes: ["d6"], x: 975, y: 400},
+    { prototypes: ["d6"], x: 850, y: 400},
+    { prototypes: ["d6"], x: 875, y: 400},
 
     {
       id: "card",
       prototype: true,
-      x: 400,
+      x: 300,
       y: 400,
       width: 50,
       height: 70,
@@ -151,7 +148,7 @@ module.exports = {
     {
       id: "uno",
       prototype: true,
-      x: 400,
+      x: 300,
       y: 300,
       width: 50,
       height: 70,
@@ -222,20 +219,20 @@ module.exports = {
       id: "handScreenHorizontal",
       prototype: true,
       locked: true,
-      x: 400,
+      x: 300,
       width:  600,
       height: 100,
       hideFaces: ["front"],
       snapZones: [{}],
     },
-    { prototypes: ["handScreenHorizontal"], y:   0, visionWhitelist: ["red"  ], backgroundColor: "rgba(224,136,58,alpha)", labelPlayerName: "red",   },
+    { prototypes: ["handScreenHorizontal"], y:   0, visionWhitelist: ["orange"  ], backgroundColor: "rgba(224,136,58,alpha)", labelPlayerName: "orange",   },
     // color hexes:
     // BOARD COLOR: #D7DEC2
     // RED: #E088E3A
     // PURPLE: #7541E30
     // YELLOW: #E0D255
     // BLUE: #79DSDE
-    { prototypes: ["handScreenHorizontal"], y: 700, visionWhitelist: ["blue"], backgroundColor: "rgba(117,65,224,alpha)",   labelPlayerName: "blue", },
+    { prototypes: ["handScreenHorizontal"], y: 700, visionWhitelist: ["violet"], backgroundColor: "rgba(117,65,224,alpha)",   labelPlayerName: "violet", },
 
     {
       id: "handScreenVertical",
@@ -248,6 +245,6 @@ module.exports = {
       snapZones: [{}],
     },
     { prototypes: ["handScreenVertical"], x: 0, visionWhitelist: ["yellow"], backgroundColor: "rgba(224,210,85,alpha)",   labelPlayerName: "yellow", },
-    { prototypes: ["handScreenVertical"], x: 1315, visionWhitelist: ["green"], backgroundColor: "rgba(121,213,222,alpha)",   labelPlayerName: "green", },
+    { prototypes: ["handScreenVertical"], x: 1090, visionWhitelist: ["teal"], backgroundColor: "rgba(121,213,222,alpha)",   labelPlayerName: "teal", },
   ],
 };

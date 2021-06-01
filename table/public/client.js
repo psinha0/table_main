@@ -931,8 +931,14 @@ function pushMessageToHistory(message) {
   // 30 is max messages before overflow
 }
 
-function eventToMouseX(event, div) { return event.clientX - div.getBoundingClientRect().left; }
-function eventToMouseY(event, div) { return event.clientY - div.getBoundingClientRect().top; }
+function eventToMouseX(event, div) {
+  zoomFactor = document.documentElement.clientWidth / 1440; // height 821 width 1440
+  return (event.clientX/zoomFactor) - div.getBoundingClientRect().left;
+}
+function eventToMouseY(event, div) {
+  zoomFactor = document.documentElement.clientHeight / 821;
+  return (event.clientY/zoomFactor) - div.getBoundingClientRect().top;
+ }
 
 function renderUserList() {
   var userListUl = document.getElementById("userListUl");
@@ -1122,15 +1128,15 @@ function convertPixelValueToView(value, dimension) { // dimension can either be 
 function convertViewValueToPixel(value, dimension) { // dimension can either be "h" for height or "w" for width
   switch (dimension) {
     case("h"):
-      convertedValue = (value * document.documentElement.clientHeight); // height: 821
+      convertedValue = value * (821 / 100); // height: 821
       break;
     case("w"):
-      convertedValue = (value * document.documentElement.clientWidth); // width: 1440
+      convertedValue = value * (1440 / 100); // width: 1440
       break;
     default:
       convertedValue = value;
   }
-  return convertedValue/100;
+  return convertedValue;
 }
 
 function render(object, isAnimated) {
@@ -1269,8 +1275,8 @@ function renderExaminingObjects() {
     objectDiv.classList.add("animatedMovement");
     objectDiv.style.left = renderX + window.scrollX;
     objectDiv.style.top  = renderY + window.scrollY;
-    objectDiv.style.width  = convertPixelValueToView(renderWidth, "w");
-    objectDiv.style.height = convertPixelValueToView(renderHeight, "h");
+    objectDiv.style.width  = renderWidth;
+    objectDiv.style.height = renderHeight;
     objectDiv.style.zIndex = maxZ + i + 3;
     var stackHeightDiv = getStackHeightDiv(object.id);
     stackHeightDiv.style.display = "none";
@@ -1368,8 +1374,13 @@ function resizeTableToFitEverything() {
   tableDiv.style.height = convertPixelValueToView(maxY, "h") + "vh";
 }
 
+function deRender(objID) {
+  // stub;
+}
+
 function snapToSnapZones(object, newProps) {
   objectsWithSnapZones.sort(compareZ);
+  console.log(objectsWithSnapZones);
   for (var i = objectsWithSnapZones.length - 1; i >= 0; i--) {
     var containerObject = objectsWithSnapZones[i];
     var containerObjectDefinition = getObjectDefinition(containerObject.id);

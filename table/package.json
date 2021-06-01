@@ -1,12 +1,4 @@
 {
-  "name": "board-gamer-2d",
-  "description": "2d multiplayer html5 board game simulator",
-  "version": "0.0.0",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/thejoshwolfe/board-gamer-2d.git"
-  },
   "dependencies": {
     "connect-static": "^1.6.0",
     "express": "^4.17.1",
