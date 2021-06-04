@@ -87,12 +87,14 @@ var hiderContainers;
 var changeHistory;
 var futureChanges;
 var messageHistory;
+var removedObjectWithSnapZones;
 function initGame(game, history) {
   gameDefinition = game;
   objectDefinitionsById = {};
   objectIndexesById = {};
   objectsById = {};
   objectsWithSnapZones = [];
+  removedObjectWithSnapZones = [];
   hiderContainers = [];
   changeHistory = [];
   futureChanges = [];
@@ -156,6 +158,14 @@ function initGame(game, history) {
 
   checkForDoneLoading();
 }
+$('#testButton').on('click', function(){
+    $("#object-object-0").hide();
+    console.log(objectsWithSnapZones);
+    removedObjectWithSnapZones.push(objectsWithSnapZones.shift());
+    console.log(removedObjectWithSnapZones);
+    // initGame();
+});
+
 function getObjectDefinition(id) {
   // resolve prototypes
   var result = {};
@@ -1006,6 +1016,7 @@ function openSideNav() {
   mySideMenu.style.borderRight = "0px";
   modalMaskDiv.style.display = "block";
   mySideMenu.style.width = "14vw";
+  document.getElementById("testButton").addEventListener("click", deRender);
 }
 function showEditUserDialog() {
   modalMaskDiv.style.display = "block";
@@ -1375,7 +1386,6 @@ function resizeTableToFitEverything() {
 }
 
 function deRender(objID) {
-  // stub;
 }
 
 function snapToSnapZones(object, newProps) {
