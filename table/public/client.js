@@ -160,7 +160,6 @@ function initGame(game, history) {
 }
 
 function pushTemplate(template) {
-  console.log(template);
   sendMessage({
     cmd: "initiateTemplate",
     args: template,
@@ -178,6 +177,11 @@ function loadTemplate(template) {
   });
   removedObjectWithSnapZones = [];
   switch(template) {
+    case "onLoad":
+      var hideItems = ["checkers_board", "monopoly_board", "cards", "checkersPieces", "dice", "monopoly_pieces", "destinations", "chance", "fairy", "chips", "card_table_bg", "card_bg", "uno"];
+      var removeSnap = ["checkers_board", "card_bg"];
+      var visibleItems = [];
+      break;
     case "uno":
       var hideItems = ["checkers_board", "monopoly_board", "cards", "checkersPieces", "dice", "monopoly_pieces", "destinations", "chance", "fairy", "chips"];
       var removeSnap = ["checkers_board"];
@@ -203,7 +207,9 @@ function loadTemplate(template) {
     $("." + i).hide();
   }
   for (const i of visibleItems) {
-    $("." + i).show();
+    if(i) {
+      $("." + i).show();
+    };
   }
   getObjects().forEach(function(object) {
     if (hideItems.indexOf(object.className) !== -1) {
@@ -224,24 +230,6 @@ function loadTemplate(template) {
     };
   });
 }
-
-/* $('#testButton').on('click', function(){
-    sendMessage({
-      cmd: "initiateTemplate",
-      args: newName,
-    });
-    var hideItems = ["cards", "checkersPieces", "dice"]
-    for (const i of hideItems) {
-      $("." + i).hide();
-    }
-    $("#object-object-0").hide();
-    getObjects().forEach(function(object) {
-      if (hideItems.indexOf(object.className) !== -1) {
-        object.locked = true;
-      };
-    });
-    removedObjectWithSnapZones.push(objectsWithSnapZones.shift());
-}); */
 
 function getObjectDefinition(id) {
   // resolve prototypes
@@ -320,6 +308,7 @@ function checkForDoneLoading() {
   renderOrder();
   resizeTableToFitEverything();
   fixFloatingThingZ();
+  pushTemplate("onLoad");
 }
 function autogenerateId(i) {
   return "object-" + i;
