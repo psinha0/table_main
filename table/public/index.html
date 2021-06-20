@@ -65,8 +65,10 @@
     <div id="mySideMenu" class="sideMenu">
       <ul>
         <li class="closebtn" onclick="closeSideMenu()">&times;</li>
-        <li id="testButton"> Do Something #1</li>
-        <li> Do Something #2</li>
+        <li onclick="pushTemplate(this.id)" id="uno">Load UNO</li>
+        <li onclick="pushTemplate(this.id)" id="cards">Load Cards</li>
+        <li onclick="pushTemplate(this.id)" id="monopoly">Load Monopoly</li>
+        <li onclick="pushTemplate(this.id)" id="checkers">Load Checkers</li>
       </ul>
     </div>
     <div id="modalMaskDiv" style="display: none;"></div>

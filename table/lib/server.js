@@ -24,7 +24,7 @@ function main() {
       handleNewSocket(socket);
     });
     httpServer.listen(8008, function(err) {
-      console.log("serving: http://127.0.0.1:25407/");
+      console.log("serving: http://127.0.0.1:8008/");
     });
   });
 }
@@ -36,7 +36,7 @@ var roomsById = {
   //  usersById: {
   //    "userId": {
   //      id: "userId",
-  //      userName: "Josh",
+  //      userName: "Prath",
   //      role: "red",
   //      socket: socket,
   //    },
@@ -125,7 +125,7 @@ function handleNewSocket(socket) {
         case CLIENT_STATE_WAITING_FOR_LOGIN:
           return ["joinRoom"];
         case CLIENT_STATE_PLAY:
-          return ["makeAMove", "changeMyName", "changeMyRole", "sendTextMessage"];
+          return ["makeAMove", "changeMyName", "changeMyRole", "sendTextMessage", "initiateTemplate"];
         default: throw asdf;
       }
     })();
@@ -219,6 +219,16 @@ function handleNewSocket(socket) {
           }}));
         }
         break;
+      case "initiateTemplate":
+        var template = message.args;
+        for (var id in room.usersById) {
+          if (id === user.id) continue;
+          var otherUser = room.usersById[id];
+          otherUser.socket.sendText(JSON.stringify({cmd:"initiateTemplate", args:{
+            template
+          }}));
+        }
+        break;
       default: throw new Error("TODO: handle command: " + message.cmd);
     }
   });
@@ -308,6 +318,10 @@ function handleNewSocket(socket) {
         var newRole = message.args;
         if (typeof newRole !== "string") return failValidation("expected string:", newRole);
         message.args = newRole;
+        break;
+      case "initiateTemplate":
+        var template = message.args;
+        message.args = template;
         break;
       case "sendTextMessage":
         var sentText = message.args;

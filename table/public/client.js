@@ -106,7 +106,6 @@ function initGame(game, history) {
     objectDefinitionsById[id] = rawDefinition;
     objectIndexesById[id] = i;
     if (rawDefinition.prototype) continue;
-
     var objectDefinition = getObjectDefinition(id);
     if (objectDefinition.faces != null) objectDefinition.faces.forEach(preloadImagePath);
     var object = {
@@ -118,6 +117,7 @@ function initGame(game, history) {
       height: objectDefinition.height,
       faces: objectDefinition.faces,
       snapZones: objectDefinition.snapZones || [],
+      className: objectDefinition.className || '',
       locked: !!objectDefinition.locked,
       faceIndex: 0,
     };
@@ -158,13 +158,90 @@ function initGame(game, history) {
 
   checkForDoneLoading();
 }
-$('#testButton').on('click', function(){
+
+function pushTemplate(template) {
+  console.log(template);
+  sendMessage({
+    cmd: "initiateTemplate",
+    args: template,
+  });
+  loadTemplate(template);
+}
+
+function loadTemplate(template) {
+  var defaultLockedItems = ["monopoly_board", "checkers_board", "card_table_bg", "card_bg"];
+  var defaultSnapItems = ["checkers_board", "card_bg"];
+  removedObjectWithSnapZones.forEach(function(object) {
+    if (defaultSnapItems.indexOf(object.className) !== -1) {
+      objectsWithSnapZones.push(object);
+    };
+  });
+  removedObjectWithSnapZones = [];
+  switch(template) {
+    case "uno":
+      var hideItems = ["checkers_board", "monopoly_board", "cards", "checkersPieces", "dice", "monopoly_pieces", "destinations", "chance", "fairy", "chips"];
+      var removeSnap = ["checkers_board"];
+      var visibleItems = ["card_table_bg", "card_bg", "uno"];
+      break;
+    case "monopoly":
+      var hideItems = ["checkers_board", "cards", "uno", "card_table_bg", "card_bg", "checkersPieces", "chips"];
+      var removeSnap = ["checkers_board", "card_bg"];
+      var visibleItems = ["monopoly_board", "monopoly_pieces", "dice", "destinations", "fairy", "chance"];
+      break;
+    case "cards":
+      var hideItems = ["checkers_board", "monopoly_board", "uno", "checkersPieces", "dice", "monopoly_pieces", "destinations", "chance", "fairy", "chips"];
+      var removeSnap = ["checkers_board"];
+      var visibleItems = ["cards", "card_table_bg", "card_bg"];
+      break;
+    case "checkers":
+      var hideItems = ["uno", "card_table_bg", "cards", "monopoly_board", "card_bg", "dice", "monopoly_pieces", "destinations", "chance", "fairy", "chips"];
+      var removeSnap = ["card_bg"];
+      var visibleItems = ["checkers_board", "checkersPieces"];
+      break;
+  }
+  for (const i of hideItems) {
+    $("." + i).hide();
+  }
+  for (const i of visibleItems) {
+    $("." + i).show();
+  }
+  getObjects().forEach(function(object) {
+    if (hideItems.indexOf(object.className) !== -1) {
+      object.locked = true;
+    };
+  });
+  getObjects().forEach(function(object) {
+    if (visibleItems.indexOf(object.className) !== -1) {
+      if (defaultLockedItems.indexOf(object.className) == -1) {
+        object.locked = false;
+      };
+    };
+  });
+  objectsWithSnapZones.forEach(function(object) {
+    if (removeSnap.indexOf(object.className) !== -1) {
+      removedObjectWithSnapZones.push(object);
+      objectsWithSnapZones.splice(objectsWithSnapZones.indexOf(object), 1);
+    };
+  });
+}
+
+/* $('#testButton').on('click', function(){
+    sendMessage({
+      cmd: "initiateTemplate",
+      args: newName,
+    });
+    var hideItems = ["cards", "checkersPieces", "dice"]
+    for (const i of hideItems) {
+      $("." + i).hide();
+    }
     $("#object-object-0").hide();
-    console.log(objectsWithSnapZones);
+    getObjects().forEach(function(object) {
+      if (hideItems.indexOf(object.className) !== -1) {
+        object.locked = true;
+      };
+    });
     removedObjectWithSnapZones.push(objectsWithSnapZones.shift());
-    console.log(removedObjectWithSnapZones);
-    // initGame();
-});
+}); */
 
 function getObjectDefinition(id) {
   // resolve prototypes
@@ -327,7 +404,7 @@ function onObjectMouseDown(event) {
   if (examiningMode !== EXAMINE_NONE) return;
   var objectDiv = this;
   var object = objectsById[objectDiv.dataset.id];
-  if (object.locked) return; // muhahahaha click the circles (not a reference everyone will get)
+  if (object.locked) return;
   event.preventDefault();
   event.stopPropagation();
 
@@ -614,6 +691,9 @@ document.addEventListener("keydown", function(event) {
     case "F".charCodeAt(0):
       if (modifierMask === 0) { flipOverSelection(); break; }
       return;
+    /* case "D".charCodeAt(0):
+      if (modifierMask === 0) { duplicateSelection(); break; }
+      return; */
     case "G".charCodeAt(0):
       if (modifierMask === 0 && groupingMouseStartX == null) { groupSelection(); startGrouping(); isGKeyDown = true; break; }
       return;
@@ -695,6 +775,23 @@ function rollSelection() {
   renderAndMaybeCommitSelection(selection);
   renderOrder();
 }
+// TODO: Duplication - doesn't work because my server mainframe literally does not render objects after initial render
+// Basically, why the hell am I so smart and didn't think of this BEFORE?!!!!!!!!!!!?
+/* function duplicateSelection() {
+  var selection = getEffectiveSelection();
+  for (var id in selection) {
+    var object = objectsById[id];
+    var newProps = selection[id];
+    var elements = Object.keys(selection);
+    for (var i=0; i<elements.length; i++) {
+      var clone = document.getElementById("object-" + elements[i]).cloneNode(true); // "deep" clone
+      document.getElementById("tableDiv").appendChild(clone);
+    }
+  }
+  renderAndMaybeCommitSelection(selection);
+  renderOrder();
+} */
+
 function cancelMove() {
   var selection = selectedObjectIdToNewProps;
   for (var id in selection) {
@@ -1016,7 +1113,6 @@ function openSideNav() {
   mySideMenu.style.borderRight = "0px";
   modalMaskDiv.style.display = "block";
   mySideMenu.style.width = "14vw";
-  document.getElementById("testButton").addEventListener("click", deRender);
 }
 function showEditUserDialog() {
   modalMaskDiv.style.display = "block";
@@ -1158,6 +1254,7 @@ function render(object, isAnimated) {
   var z = object.z;
   var width = object.width
   var faceIndex = object.faceIndex;
+  var className = object.className;
   var newProps = selectedObjectIdToNewProps[object.id];
   if (newProps != null) {
     x = newProps.x;
@@ -1201,6 +1298,7 @@ function render(object, isAnimated) {
   objectDiv.style.width  = convertPixelValueToView(object.width, "w") + "vw";
   objectDiv.style.height = convertPixelValueToView(object.height, "h") + "vh";
   objectDiv.style.zIndex = z;
+  if (className) { objectDiv.classList.add(className); }
   if (object.faces != null) {
     var facePath = object.faces[faceIndex];
     var imageUrlUrl = facePathToUrlUrl[facePath];
@@ -1385,12 +1483,8 @@ function resizeTableToFitEverything() {
   tableDiv.style.height = convertPixelValueToView(maxY, "h") + "vh";
 }
 
-function deRender(objID) {
-}
-
 function snapToSnapZones(object, newProps) {
   objectsWithSnapZones.sort(compareZ);
-  console.log(objectsWithSnapZones);
   for (var i = objectsWithSnapZones.length - 1; i >= 0; i--) {
     var containerObject = objectsWithSnapZones[i];
     var containerObjectDefinition = getObjectDefinition(containerObject.id);
@@ -1562,6 +1656,8 @@ function connectToServer() {
         } else if (message.cmd === "changeMyRole") {
           usersById[message.args.id].role = message.args.role;
           renderUserList();
+        } else if (message.cmd === "initiateTemplate") {
+          loadTemplate(message.args.template);
         }
         break;
       default: throw asdf;
