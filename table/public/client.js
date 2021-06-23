@@ -88,6 +88,7 @@ var changeHistory;
 var futureChanges;
 var messageHistory;
 var removedObjectWithSnapZones;
+var displayStackHeight;
 function initGame(game, history) {
   gameDefinition = game;
   objectDefinitionsById = {};
@@ -170,6 +171,7 @@ function pushTemplate(template) {
 function loadTemplate(template) {
   var defaultLockedItems = ["monopoly_board", "checkers_board", "card_table_bg", "card_bg"];
   var defaultSnapItems = ["checkers_board", "card_bg"];
+  displayStackHeight = true;
   removedObjectWithSnapZones.forEach(function(object) {
     if (defaultSnapItems.indexOf(object.className) !== -1) {
       objectsWithSnapZones.push(object);
@@ -186,6 +188,7 @@ function loadTemplate(template) {
       var hideItems = ["checkers_board", "monopoly_board", "cards", "checkersPieces", "dice", "monopoly_pieces", "destinations", "chance", "fairy", "chips"];
       var removeSnap = ["checkers_board"];
       var visibleItems = ["card_table_bg", "card_bg", "uno"];
+      displayStackHeight = false;
       break;
     case "monopoly":
       var hideItems = ["checkers_board", "cards", "uno", "card_table_bg", "card_bg", "checkersPieces", "chips"];
@@ -196,6 +199,7 @@ function loadTemplate(template) {
       var hideItems = ["checkers_board", "monopoly_board", "uno", "checkersPieces", "dice", "monopoly_pieces", "destinations", "chance", "fairy", "chips"];
       var removeSnap = ["checkers_board"];
       var visibleItems = ["cards", "card_table_bg", "card_bg"];
+      displayStackHeight = false;
       break;
     case "checkers":
       var hideItems = ["uno", "card_table_bg", "cards", "monopoly_board", "card_bg", "dice", "monopoly_pieces", "destinations", "chance", "fairy", "chips"];
@@ -420,7 +424,7 @@ function onObjectMouseDown(event) {
   draggingMode = DRAG_MOVE_SELECTION;
   lastMouseDragX = eventToMouseX(event, tableDiv);
   lastMouseDragY = eventToMouseY(event, tableDiv);
-  if (isGKeyDown) startGrouping();
+  if (isGKeyDown) fanObjects();
 
   // bring selection to top
   // effectively do a stable sort.
@@ -684,7 +688,7 @@ document.addEventListener("keydown", function(event) {
       if (modifierMask === 0) { duplicateSelection(); break; }
       return; */
     case "G".charCodeAt(0):
-      if (modifierMask === 0 && groupingMouseStartX == null) { groupSelection(); startGrouping(); isGKeyDown = true; break; }
+      if (modifierMask === 0 && groupingMouseStartX == null) { groupSelection(); fanObjects(); isGKeyDown = true; break; }
       return;
     case 27: // Escape
       if (modifierMask === 0 && numberTypingBuffer.length > 0) { consumeNumberModifier(); break; }
@@ -720,14 +724,14 @@ document.addEventListener("keyup", function(event) {
       unexamine();
       break;
     case "G".charCodeAt(0):
-      if (modifierMask === 0) { stopGrouping(); isGKeyDown = false; break; }
+      if (modifierMask === 0) { stopFan(); isGKeyDown = false; break; }
       return;
     default: return;
   }
   event.preventDefault();
 });
 
-function startGrouping() {
+function fanObjects() {
   if (draggingMode !== DRAG_MOVE_SELECTION) return;
   groupingMouseStartX = lastMouseDragX;
   for (var id in selectedObjectIdToNewProps) {
@@ -736,7 +740,7 @@ function startGrouping() {
     break;
   }
 }
-function stopGrouping() {
+function stopFan() {
   groupingMouseStartX = null;
   groupingObjectStartX = null;
 }
@@ -1360,7 +1364,7 @@ function renderExaminingObjects() {
     zoomFactor = 1.0;
     totalWidth = windowWidth;
   }
-  var averageWidth = totalWidth / objects.length;
+  var averageWidth = totalWidth / (objects.length);
 
   var maxZ = findMaxZ();
   for (var i = 0; i < objects.length; i++) {
@@ -1371,7 +1375,7 @@ function renderExaminingObjects() {
     var renderY = (windowHeight - renderHeight) / 2;
     var objectDiv = getObjectDiv(object.id);
     objectDiv.classList.add("animatedMovement");
-    objectDiv.style.left = renderX + window.scrollX;
+    objectDiv.style.left = (window.innerWidth/4) + window.scrollX;
     objectDiv.style.top  = renderY + window.scrollY;
     objectDiv.style.width  = renderWidth;
     objectDiv.style.height = renderHeight;
@@ -1401,9 +1405,9 @@ function renderOrder() {
     idAndZList.forEach(function(idAndZ, i) {
       if (idAndZ.id in examiningObjectsById) return;
       var stackHeightDiv = getStackHeightDiv(idAndZ.id);
-      if (i > 0) {
+      if (i > 0 ) {
         stackHeightDiv.textContent = (i + 1).toString();
-        stackHeightDiv.style.display = "block";
+        if (displayStackHeight == true) { stackHeightDiv.style.display = "block"; }
       } else {
         stackHeightDiv.style.display = "none";
       }
@@ -1593,7 +1597,6 @@ function connectToServer() {
   function onMessage(event) {
     var msg = event.data;
     if (msg === "keepAlive") return;
-    console.log(msg);
     var message = JSON.parse(msg);
     if (screenMode === SCREEN_MODE_WAITING_FOR_ROOM_CODE_CONFIRMATION && message.cmd === "badRoomCode") {
       // nice try
